@@ -9,7 +9,7 @@ import (
 
 var db *gorm.DB
 
-func InitDb() {
+func InitDB() {
 	user := os.Getenv("user")
 	password := os.Getenv("password")
 	address := os.Getenv("address")
@@ -17,6 +17,7 @@ func InitDb() {
 	databasename := os.Getenv("database")
 	url := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		user, password, address, port, databasename)
+	fmt.Println("usr: ", url)
 	var err error
 	db, err = gorm.Open("mysql", url)
 	if err != nil {
