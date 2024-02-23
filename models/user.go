@@ -20,10 +20,7 @@ func InitDB() {
 
 func GetuserByEmail(email string) User {
 	var user User
-	first := db.Debug().Model(&User{}).Where("email = ?", email).First(&user)
-	if first.Error != nil {
-		panic("sql错误")
-	}
+	db.Debug().Model(&User{}).Where("email = ?", email).First(&user)
 	return user
 }
 
