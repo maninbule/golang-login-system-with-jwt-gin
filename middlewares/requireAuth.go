@@ -12,11 +12,12 @@ import (
 )
 
 func RequireAuth(c *gin.Context) {
-	tokenString, err := c.Cookie("Authorization")
-	if err != nil {
+	tokenString := c.GetHeader("Authorization")
+	//tokenString, err := c.Cookie("Authorization")
+	if len(tokenString) == 0 {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"code": http.StatusUnauthorized,
-			"msg":  "没有权限",
+			"msg":  "Authorization 字段为空",
 		})
 		return
 	}
@@ -28,12 +29,12 @@ func RequireAuth(c *gin.Context) {
 		return []byte(os.Getenv("secret")), nil
 	})
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, "过期的cookie")
+		c.AbortWithStatusJSON(http.StatusUnauthorized, "token错误或者过期")
 		return
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, "过期的cookie")
+			c.AbortWithStatusJSON(http.StatusUnauthorized, "过期的token")
 			return
 		}
 		email, _ := claims.GetSubject()

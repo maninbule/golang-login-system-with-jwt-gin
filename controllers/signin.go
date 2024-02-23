@@ -36,7 +36,7 @@ func Signin(c *gin.Context) {
 	// 登陆成功，发放token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user_db.Email,
-		"exp": time.Now().Add(time.Second * 10).Unix(),
+		"exp": time.Now().Add(time.Second * 60).Unix(),
 	})
 	fmt.Println("secret", os.Getenv("secret"))
 	tokenString, err := token.SignedString([]byte(os.Getenv("secret")))
@@ -44,8 +44,9 @@ func Signin(c *gin.Context) {
 		fmt.Println("发放token失败 ", err)
 		return
 	}
-	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Authorization", tokenString, 20, "", "", false, true)
+	//c.SetSameSite(http.SameSiteLaxMode)
+	//c.SetCookie("Authorization", tokenString, 20, "", "", false, true)
+	c.Header("Authorization", "Bearer "+tokenString)
 	c.JSON(http.StatusOK, "登陆成功")
 }
 
